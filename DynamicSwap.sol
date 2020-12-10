@@ -524,7 +524,7 @@ contract Controller {
         uint256 totalLP = IERC20(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5).totalSupply();
         uint256 dai = IERC20(0x6B175474E89094C44Da98b954EedeAC495271d0F).balanceOf(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5);
         uint256 usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48).balanceOf(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5).mul(1e12);
-        uint256 price = dai.add(usdc).mul(1e18).div(totalLP);
+        uint256 price = dai.mul(usdc).sqrt().mul(2).mul(1e18).div(totalLP);
         return price;
     }
 
