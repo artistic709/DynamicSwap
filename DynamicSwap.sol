@@ -510,6 +510,17 @@ interface Compound {
     function underlying() external view returns (address);
 }
 
+interface IUniswapV2Pair {
+    function totalSupply() external view returns (uint);
+    function balanceOf(address owner) external view returns (uint);
+    function approve(address spender, uint value) external returns (bool);
+    function transfer(address to, uint value) external returns (bool);
+    function transferFrom(address from, address to, uint value) external returns (bool);
+    function token0() external view returns (address);
+    function token1() external view returns (address);
+    function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast);
+}
+
 contract Controller {
     using SafeMath for uint256;
     DynamicSwap public target = DynamicSwap(0x000000000000000000000000000000000000bEEF);
@@ -521,10 +532,11 @@ contract Controller {
     }
 
     function getUniswapLPPrice() public view returns (uint256) { // todo : support all pairs
-        uint256 totalLP = IERC20(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5).totalSupply();
-        uint256 dai = IERC20(0x6B175474E89094C44Da98b954EedeAC495271d0F).balanceOf(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5);
-        uint256 usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48).balanceOf(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5).mul(1e12);
-        uint256 price = dai.mul(usdc).sqrt().mul(2).mul(1e18).div(totalLP);
+        IUniswapV2Pair pair = IUniswapV2Pair(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5); 
+        uint256 totalLP = pair.totalSupply();
+        (uint112 dai, uint112 usdc, ) = pair.getReserves();
+        //sqrt(a * b) * 2 <= a + b
+        uint256 price = uint(dai).mul(uint(usdc)).mul(1e12).sqrt().mul(2).mul(1e18).div(totalLP);
         return price;
     }
 
