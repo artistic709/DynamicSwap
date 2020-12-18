@@ -386,9 +386,9 @@ contract DynamicSwap is ERC20, ERC20Detailed {
 
         require(output >= minOutput, "slippage");
         
-        calcFee(normalize(from, input));
         from.safeTransferFrom(msg.sender, address(this), input);
         to.safeTransfer(msg.sender, output);
+        calcFee(normalize(from, input));
 
         emit Swap(msg.sender, address(from), address(to), input, output);
     }
@@ -409,9 +409,9 @@ contract DynamicSwap is ERC20, ERC20Detailed {
         
         require(input <= maxInput, "slippage");
 
-        calcFee(normalize(from, input));
         from.safeTransferFrom(msg.sender, address(this), input);
         to.safeTransfer(msg.sender, output);
+        calcFee(normalize(from, input));
 
         emit Swap(msg.sender, address(from), address(to), input, output);
     }
