@@ -528,7 +528,7 @@ contract Controller {
     function getCompoundPrice(address token) public view returns (uint256) {
         address underlying = Compound(token).underlying();
         uint8 decimals = ERC20Detailed(underlying).decimals();
-        return Compound(token).exchangeRateStored().mul(1e8*1e18).div(uint256(10) ** decimals);
+        return Compound(token).exchangeRateStored().mul(1e8).div(uint256(10) ** decimals);
     }
 
     function getUniswapLPPrice() public view returns (uint256) { // todo : support all pairs
