@@ -505,9 +505,8 @@ contract DynamicSwap is ERC20, ERC20Detailed {
     */
 }
 
-interface Compound {
-    function exchangeRateStored() external view returns (uint256);
-    function underlying() external view returns (address);
+contract Normalizer {
+    function getPrice(address token) external view returns (uint256);
 }
 
 interface IUniswapV2Pair {
@@ -524,11 +523,10 @@ interface IUniswapV2Pair {
 contract Controller {
     using SafeMath for uint256;
     DynamicSwap public target = DynamicSwap(0x000000000000000000000000000000000000bEEF);
+    Normalizer public normalizer = Normalizer(0x3Ce448Eea6a158DD5937D5e9137e6b9eCe69014a); //CreamY Normalizer
 
-    function getCompoundPrice(address token) public view returns (uint256) {
-        address underlying = Compound(token).underlying();
-        uint8 decimals = ERC20Detailed(underlying).decimals();
-        return Compound(token).exchangeRateStored().mul(1e8).div(uint256(10) ** decimals);
+    function getPriceFromCreamY(address token) public view returns (uint256) {
+        return normalizer.getPrice(token);
     }
 
     function getUniswapLPPrice() public view returns (uint256) { // todo : support all pairs
@@ -553,7 +551,7 @@ contract Controller {
         target.setRate(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 1e12*1e18);
         //cUSDC
         target.setWeight(0x39AA39c021dfbaE8faC545936693aC917d5E7563, 1e18);
-        target.setRate(0x39AA39c021dfbaE8faC545936693aC917d5E7563, getCompoundPrice(0x39AA39c021dfbaE8faC545936693aC917d5E7563));
+        target.setRate(0x39AA39c021dfbaE8faC545936693aC917d5E7563, getPriceFromCreamY(0x39AA39c021dfbaE8faC545936693aC917d5E7563));
         //DAI-USDC Uniswap
         target.setWeight(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5, 1e18);
         target.setRate(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5, getUniswapLPPrice());
@@ -563,7 +561,7 @@ contract Controller {
         uint256 newRate;
         uint256 rateStored;
 
-        newRate = getCompoundPrice(0x39AA39c021dfbaE8faC545936693aC917d5E7563);
+        newRate = getPriceFromCreamY(0x39AA39c021dfbaE8faC545936693aC917d5E7563);
         rateStored = target.rate(0x39AA39c021dfbaE8faC545936693aC917d5E7563);
         if(newRate != rateStored) {
             target.setWeight(0x39AA39c021dfbaE8faC545936693aC917d5E7563, target.weight(0x39AA39c021dfbaE8faC545936693aC917d5E7563).mul(newRate).div(rateStored));
