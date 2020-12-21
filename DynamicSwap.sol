@@ -505,6 +505,13 @@ contract DynamicSwap is ERC20, ERC20Detailed {
     */
 }
 
+interface IDynamicSwap {
+    function setRate(address token, uint256 _rate) external;
+    function setWeight(address token, uint256 _weight) external;
+    function rate(address token) external returns (uint256);
+    function weight(address token) external returns (uint256);
+}
+
 contract Normalizer {
     function getPrice(address token) external view returns (uint256);
 }
@@ -522,7 +529,7 @@ interface IUniswapV2Pair {
 
 contract Controller {
     using SafeMath for uint256;
-    DynamicSwap public target = DynamicSwap(0x000000000000000000000000000000000000bEEF);
+    IDynamicSwap public target = DynamicSwap(0x000000000000000000000000000000000000bEEF);
     Normalizer public normalizer = Normalizer(0x3Ce448Eea6a158DD5937D5e9137e6b9eCe69014a); //CreamY Normalizer
 
     function getPriceFromCreamY(address token) public view returns (uint256) {
