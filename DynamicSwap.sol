@@ -529,7 +529,7 @@ interface IUniswapV2Pair {
 
 contract Controller {
     using SafeMath for uint256;
-    IDynamicSwap public target = DynamicSwap(0x000000000000000000000000000000000000bEEF);
+    IDynamicSwap public target = IDynamicSwap(0x000000000000000000000000000000000000bEEF);
     Normalizer public normalizer = Normalizer(0x3Ce448Eea6a158DD5937D5e9137e6b9eCe69014a); //CreamY Normalizer
     uint256 public periodSize = 1 hours;
     uint256 public lastUpdated;
