@@ -506,8 +506,8 @@ contract DynamicSwap is ERC20, ERC20Detailed {
 }
 
 interface IDynamicSwap {
-    function setRate(address token, uint256 _rate) external;
-    function setWeight(address token, uint256 _weight) external;
+    function setRate(address token, uint256 rate) external;
+    function setWeight(address token, uint256 weight) external;
     function rate(address token) external returns (uint256);
     function weight(address token) external returns (uint256);
 }
@@ -531,6 +531,8 @@ contract Controller {
     using SafeMath for uint256;
     IDynamicSwap public target = DynamicSwap(0x000000000000000000000000000000000000bEEF);
     Normalizer public normalizer = Normalizer(0x3Ce448Eea6a158DD5937D5e9137e6b9eCe69014a); //CreamY Normalizer
+    uint256 public periodSize = 1 hours;
+    uint256 public lastUpdated;
 
     function getPriceFromCreamY(address token) public view returns (uint256) {
         return normalizer.getPrice(token);
@@ -565,6 +567,10 @@ contract Controller {
     }
 
     function work() external {
+        uint timeElapsed = block.timestamp - lastUpdated;
+        require(timeElapsed > periodSize);
+        lastUpdated = block.timestamp;
+
         uint256 newRate;
         uint256 rateStored;
 
