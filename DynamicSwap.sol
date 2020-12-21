@@ -558,12 +558,19 @@ contract Controller {
         //USDC
         target.setWeight(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 1e18);
         target.setRate(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 1e12*1e18);
+        //USDT
+        target.setWeight(0xdAC17F958D2ee523a2206206994597C13D831ec7, 1e18);
+        target.setRate(0xdAC17F958D2ee523a2206206994597C13D831ec7, 1e12*1e18);
         //cUSDC
         target.setWeight(0x39AA39c021dfbaE8faC545936693aC917d5E7563, 1e18);
         target.setRate(0x39AA39c021dfbaE8faC545936693aC917d5E7563, getPriceFromCreamY(0x39AA39c021dfbaE8faC545936693aC917d5E7563));
         //DAI-USDC Uniswap
         target.setWeight(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5, 1e18);
         target.setRate(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5, getUniswapLPPrice());
+        //yDAI/yUSDC/yUSDT/yTUSD
+        target.setWeight(0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8, 1e18);
+        target.setRate(0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8, getPriceFromCreamY(0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8));
+
     }
 
     function work() external {
@@ -579,6 +586,13 @@ contract Controller {
         if(newRate != rateStored) {
             target.setWeight(0x39AA39c021dfbaE8faC545936693aC917d5E7563, target.weight(0x39AA39c021dfbaE8faC545936693aC917d5E7563).mul(newRate).div(rateStored));
             target.setRate(0x39AA39c021dfbaE8faC545936693aC917d5E7563, newRate);
+        }
+
+        newRate = getPriceFromCreamY(0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8);
+        rateStored = target.rate(0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8);
+        if(newRate != rateStored) {
+            target.setWeight(0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8, target.weight(0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8).mul(newRate).div(rateStored));
+            target.setRate(0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8, newRate);
         }
 
         newRate = getUniswapLPPrice();
