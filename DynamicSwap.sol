@@ -587,45 +587,32 @@ contract Controller {
         
     }
 
+    function updateCoin(address token, uint256 newRate) internal {
+        uint256 rateStored = target.rate(token);
+        if(newRate != rateStored) {
+            target.setWeight(token, target.weight(token).mul(newRate).div(rateStored));
+            target.setRate(token, newRate);
+        }
+    }
+
     function work() external {
         uint timeElapsed = block.timestamp - lastUpdated;
         require(timeElapsed > periodSize);
         lastUpdated = block.timestamp;
 
         uint256 newRate;
-        uint256 rateStored;
-
         //cUSDC
         newRate = getCompoundPrice(0x39AA39c021dfbaE8faC545936693aC917d5E7563);
-        rateStored = target.rate(0x39AA39c021dfbaE8faC545936693aC917d5E7563);
-        if(newRate != rateStored) {
-            target.setWeight(0x39AA39c021dfbaE8faC545936693aC917d5E7563, target.weight(0x39AA39c021dfbaE8faC545936693aC917d5E7563).mul(newRate).div(rateStored));
-            target.setRate(0x39AA39c021dfbaE8faC545936693aC917d5E7563, newRate);
-        }
-
+        updateCoin(0x39AA39c021dfbaE8faC545936693aC917d5E7563, newRate);
         //DAI-USDC Uniswap
         newRate = getUniswapLPPrice();
-        rateStored = target.rate(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5);
-        if(newRate != rateStored) {
-            target.setWeight(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5, target.weight(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5).mul(newRate).div(rateStored));
-            target.setRate(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5, newRate);
-        }
-        
+        updateCoin(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5, newRate);
         //curve yDAI/yUSDC/yUSDT/yTUSD
         newRate = getPriceFromCreamY(0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8);
-        rateStored = target.rate(0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8);
-        if(newRate != rateStored) {
-            target.setWeight(0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8, target.weight(0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8).mul(newRate).div(rateStored));
-            target.setRate(0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8, newRate);
-        }
-
+        updateCoin(0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8, newRate);
         //yVault curve yD/U/U/T
         newRate = getPriceFromCreamY(0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c);
-        rateStored = target.rate(0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c);
-        if(newRate != rateStored) {
-            target.setWeight(0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c, target.weight(0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c).mul(newRate).div(rateStored));
-            target.setRate(0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c, newRate);
-        }
+        updateCoin(0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c, newRate);
     }
 
 }
