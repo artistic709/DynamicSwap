@@ -516,6 +516,11 @@ contract Normalizer {
     function getPrice(address token) external view returns (uint256);
 }
 
+interface Compound {
+    function exchangeRateStored() external view returns (uint256);
+    function underlying() external view returns (address);
+}
+
 interface IUniswapV2Pair {
     function totalSupply() external view returns (uint);
     function balanceOf(address owner) external view returns (uint);
