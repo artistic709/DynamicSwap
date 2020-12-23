@@ -265,6 +265,17 @@ contract DynamicSwap is ERC20, ERC20Detailed {
         allCoins.push(IERC20(_coin));
     }
 
+    function removeCoins(address _coin) external {
+        require(msg.sender == governance, "!governance");
+        require(coins[_coin] == true, "Not approved");
+        coins[_coin] = false;
+        for (uint256 i = 0; i < allCoins.length-1; i++) {
+            if(allCoins[i] == IERC20(_coin))
+                allCoins[i] = allCoins[allCoins.length-1];
+        }
+        allCoins.pop();
+    }
+
     function setController(address _controller, bool _isController) external {
         require(msg.sender == governance, "!governance");
         isController[_controller] = _isController;
