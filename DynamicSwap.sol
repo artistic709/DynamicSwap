@@ -538,6 +538,12 @@ contract Controller {
         return normalizer.getPrice(token);
     }
 
+    function getCompoundPrice(address token) public view returns (uint256) {
+        address underlying = Compound(token).underlying();
+        uint8 decimals = ERC20Detailed(underlying).decimals();
+        return Compound(token).exchangeRateStored().mul(1e18).div(uint256(10) ** decimals); //normalize to 1e18
+    }
+
     function getUniswapLPPrice() public view returns (uint256) { // todo : support all pairs
         IUniswapV2Pair pair = IUniswapV2Pair(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5); 
         uint256 totalLP = pair.totalSupply();
@@ -563,7 +569,7 @@ contract Controller {
         target.setRate(0xdAC17F958D2ee523a2206206994597C13D831ec7, 1e12*1e18);
         //cUSDC
         target.setWeight(0x39AA39c021dfbaE8faC545936693aC917d5E7563, 1e18);
-        target.setRate(0x39AA39c021dfbaE8faC545936693aC917d5E7563, getPriceFromCreamY(0x39AA39c021dfbaE8faC545936693aC917d5E7563));
+        target.setRate(0x39AA39c021dfbaE8faC545936693aC917d5E7563, getCompoundPrice(0x39AA39c021dfbaE8faC545936693aC917d5E7563));
         //DAI-USDC Uniswap
         target.setWeight(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5, 1e18);
         target.setRate(0xAE461cA67B15dc8dc81CE7615e0320dA1A9aB8D5, getUniswapLPPrice());
@@ -581,7 +587,7 @@ contract Controller {
         uint256 newRate;
         uint256 rateStored;
 
-        newRate = getPriceFromCreamY(0x39AA39c021dfbaE8faC545936693aC917d5E7563);
+        newRate = getCompoundPrice(0x39AA39c021dfbaE8faC545936693aC917d5E7563);
         rateStored = target.rate(0x39AA39c021dfbaE8faC545936693aC917d5E7563);
         if(newRate != rateStored) {
             target.setWeight(0x39AA39c021dfbaE8faC545936693aC917d5E7563, target.weight(0x39AA39c021dfbaE8faC545936693aC917d5E7563).mul(newRate).div(rateStored));
